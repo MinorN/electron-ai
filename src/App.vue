@@ -1,8 +1,8 @@
 <template>
-  <h1>xxxxx</h1>
-  <p>Welcome to your Electron application.</p>
+  <div class="flex items-center justify-between h-screen">
+    <div class="bg-gray-300 text-gray-700 w-[10rem] h-full">sider</div>
+    <div class="bg-green-300 text-blue-700 h-full flex-1">content</div>
+  </div>
 </template>
 
-<script setup lang="ts">
-console.log('👋 This message is being logged by "App.vue", included via Vite')
-</script>
+<script setup lang="ts"></script>
