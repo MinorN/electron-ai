@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { ConversationProps, ProviderProps } from '@/types'
 import { Icon } from '@iconify/vue'
 import ConversationList from '@/components/ConversationList.vue'
 import ProviderSelect from '@/components/ProviderSelect.vue'
+import MessageInput from '@/components/MessageInput.vue'
 
 const items: ConversationProps[] = [
   {
@@ -77,6 +79,8 @@ const providers: ProviderProps[] = [
     updatedAt: '2024-07-03',
   },
 ]
+
+const selectedModel = ref('')
 </script>
 
 <template>
@@ -101,8 +105,13 @@ const providers: ProviderProps[] = [
       </div>
     </div>
     <div class="h-full flex-1 flex items-center">
-      <div class="w-[80%] mx-auto">
-        <ProviderSelect :items="providers" />
+      <div class="w-[80%] mx-auto h-full">
+        <div class="flex items-center h-[85%]">
+          <ProviderSelect :items="providers" v-model="selectedModel" />
+        </div>
+        <div class="flex items-center h-[15%]">
+          <MessageInput />
+        </div>
       </div>
     </div>
   </div>
