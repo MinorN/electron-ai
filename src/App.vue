@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ConversationProps } from '@/types'
+import { ConversationProps, ProviderProps } from '@/types'
 import { Icon } from '@iconify/vue'
 import ConversationList from '@/components/ConversationList.vue'
+import ProviderSelect from '@/components/ProviderSelect.vue'
 
 const items: ConversationProps[] = [
   {
@@ -53,6 +54,29 @@ const items: ConversationProps[] = [
     updatedAt: '2021-10-01',
   },
 ]
+
+const providers: ProviderProps[] = [
+  {
+    id: 1,
+    name: '文心一言',
+    desc: '文心一言 百度出品的大模型',
+    models: ['ERNIE-4.0-8K', 'ERNIE-3.5-8K', 'ERNIE-Speed-8K'],
+    avatar:
+      'https://qph.cf2.poecdn.net/main-thumb-pb-3004-50-jougqzjtwfqfyqprxbdwofvnwattmtrg.jpeg',
+    createdAt: '2024-07-03',
+    updatedAt: '2024-07-03',
+  },
+  {
+    id: 2,
+    name: '通义千问',
+    desc: '通义千问',
+    models: ['qwen-turbo', 'qwen-plus', 'qwen-max'],
+    avatar:
+      'https://qph.cf2.poecdn.net/main-thumb-pb-3004-50-jougqzjtwfqfyqprxbdwofvnwattmtrg.jpeg',
+    createdAt: '2024-07-03',
+    updatedAt: '2024-07-03',
+  },
+]
 </script>
 
 <template>
@@ -76,6 +100,10 @@ const items: ConversationProps[] = [
         </button>
       </div>
     </div>
-    <div class="h-full flex-1"></div>
+    <div class="h-full flex-1 flex items-center">
+      <div class="w-[80%] mx-auto">
+        <ProviderSelect :items="providers" />
+      </div>
+    </div>
   </div>
 </template>
