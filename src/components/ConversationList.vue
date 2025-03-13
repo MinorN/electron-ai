@@ -11,22 +11,20 @@ defineProps<{ items: ConversationProps[] }>()
       v-for="item in items"
       :key="item.id"
     >
-      <a href="#">
-        <RouterLink to="/conversation">
-          <div
-            class="flex justify-between items-center text-sm leading-5 text-gray-500"
-          >
-            <span>{{ item.selectedModel }}</span>
-            <span>{{ item.updatedAt }}</span>
-          </div>
-          <h2
-            class="font-bold leading-6 text-gray-900 truncate"
-            :title="item.title"
-          >
-            {{ item.title }}
-          </h2>
-        </RouterLink>
-      </a>
+      <RouterLink :to="`/conversation/${item.id}`">
+        <div
+          class="flex justify-between items-center text-sm leading-5 text-gray-500"
+        >
+          <span>{{ item.selectedModel }}</span>
+          <span>{{ item.updatedAt }}</span>
+        </div>
+        <h2
+          class="font-bold leading-6 text-gray-900 truncate"
+          :title="item.title"
+        >
+          {{ item.title }}
+        </h2>
+      </RouterLink>
     </div>
   </div>
 </template>

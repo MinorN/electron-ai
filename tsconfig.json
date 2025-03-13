@@ -12,6 +12,7 @@
       "@/*": ["src/*"]
     },
     "outDir": "dist",
+    "strictNullChecks": true,
     "moduleResolution": "node",
     "resolveJsonModule": true
   }

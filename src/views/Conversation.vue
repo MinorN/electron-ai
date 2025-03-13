@@ -1,65 +1,51 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import MessageInput from '@/components/MessageInput.vue'
 import MessageList from '@/views/MessageList.vue'
-import { MessageProps } from '@/types'
+import { messages, conversations } from '@/testData'
+import { MessageProps, ConversationProps } from '@/types'
 
-const messages: MessageProps[] = [
-  {
-    id: 1,
-    content: '什么是光合作用',
-    createdAt: '2024-07-03',
-    updatedAt: '2024-07-03',
-    type: 'question',
-    conversationId: 1,
-  },
-  {
-    id: 2,
-    content: '你的说法很请正确，理解的很不错,你的说法很请正确，理解的很不错',
-    createdAt: '2024-07-03',
-    updatedAt: '2024-07-03',
-    type: 'answer',
-    conversationId: 1,
-  },
-  {
-    id: 3,
-    content: '请告诉我更多',
-    createdAt: '2024-07-03',
-    updatedAt: '2024-07-03',
-    type: 'question',
-    conversationId: 1,
-  },
-  {
-    id: 4,
-    content: '你的说法很请正确，理解的很不错,你的说法很请正确，理解的很不错',
-    createdAt: '2024-07-03',
-    updatedAt: '2024-07-03',
-    type: 'answer',
-    conversationId: 1,
-  },
-  {
-    id: 5,
-    content: '还有更多的信息吗',
-    createdAt: '2024-07-03',
-    type: 'question',
-    updatedAt: '2024-07-03',
-    conversationId: 1,
-  },
-  {
-    id: 6,
-    content: '',
-    createdAt: '2024-07-03',
-    updatedAt: '2024-07-03',
-    type: 'answer',
-    status: 'loading',
-    conversationId: 1,
-  },
-]
+const route = useRoute()
+
+let conversationId = parseInt(route.params.id as string)
+
+const filterMessages = ref<MessageProps[]>([])
+
+const conversation = ref<ConversationProps>()
+conversation.value = conversations.find((item) => item.id === conversationId)
+
+filterMessages.value = messages.filter(
+  (message) => message.conversationId === conversationId
+)
+watch(
+  () => route.params.id,
+  (newId: string) => {
+    conversationId = parseInt(newId)
+    filterMessages.value = messages.filter(
+      (message) => message.conversationId === conversationId
+    )
+    conversation.value = conversations.find(
+      (item) => item.id === conversationId
+    )
+  }
+)
 </script>
 
 <template>
-  <div class="w-[80%] mx-auto h-[85%] overflow-y-auto pt-2">
-    <MessageList :messages="messages" />
+  <div
+    v-if="conversation"
+    class="h-[10%] bg-gray-200 border-b border-gray-300 flex items-center px-3 justify-between"
+  >
+    <h3 class="font-semibold text-gray-900 line-clamp-1">
+      {{ conversation.title }}
+    </h3>
+    <span class="text-sm text-gray-500 flex-shrink-0">
+      {{ conversation.createdAt }}
+    </span>
+  </div>
+  <div class="w-[80%] mx-auto h-[75%] overflow-y-auto pt-2">
+    <MessageList :messages="filterMessages" />
   </div>
   <div class="w-[80%] mx-auto h-[15%] flex items-center">
     <MessageInput />
