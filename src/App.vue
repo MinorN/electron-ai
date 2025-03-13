@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ConversationProps, ProviderProps } from '@/types'
 import { Icon } from '@iconify/vue'
 import ConversationList from '@/components/ConversationList.vue'
 import { conversations } from '@/testData'
+import Button from './components/Button.vue'
 
 const items = conversations
 </script>
@@ -34,6 +34,7 @@ const items = conversations
       </div>
     </div>
     <div class="h-full flex-1">
+      <Button color="purple">123</Button>
       <RouterView />
     </div>
   </div>
