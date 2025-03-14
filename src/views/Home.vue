@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ConversationProps, ProviderProps } from '@/types'
-import ProviderSelect from '@/components/ProviderSelect.vue'
-import MessageInput from '@/components/MessageInput.vue'
-import { providers } from '@/testData'
+import { ref } from "vue";
+import { ConversationProps, ProviderProps } from "@/types";
+import ProviderSelect from "@/components/ProviderSelect.vue";
+import MessageInput from "@/components/MessageInput.vue";
+import { providers } from "@/testData";
 
-const selectedModel = ref('')
+const selectedModel = ref("");
 </script>
 
 <template>

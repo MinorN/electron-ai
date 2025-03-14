@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Icon } from '@iconify/vue'
-import ConversationList from '@/components/ConversationList.vue'
-import { conversations } from '@/testData'
-import Button from './components/Button.vue'
+import { ref } from "vue";
+import { Icon } from "@iconify/vue";
+import ConversationList from "@/components/ConversationList.vue";
+import { conversations } from "@/testData";
+import Button from "./components/Button.vue";
 
-const items = conversations
+const items = conversations;
 </script>
 
 <template>
@@ -34,7 +34,6 @@ const items = conversations
       </div>
     </div>
     <div class="h-full flex-1">
-      <Button color="purple">123</Button>
       <RouterView />
     </div>
   </div>
