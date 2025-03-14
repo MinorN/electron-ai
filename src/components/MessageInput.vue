@@ -18,16 +18,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineEmits } from 'vue'
-import { Icon } from '@iconify/vue'
+import { ref } from "vue";
+import { Icon } from "@iconify/vue";
 
 const emit = defineEmits<{
-  create: [value: string]
-}>()
-const model = ref('')
+  create: [value: string];
+}>();
+const model = ref("");
 const onCreate = () => {
-  if (model.value.trim() !== '') {
-    emit('create', model.value)
+  if (model.value.trim() !== "") {
+    emit("create", model.value);
   }
-}
+};
 </script>
