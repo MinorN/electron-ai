@@ -1,9 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'node:path'
 import started from 'electron-squirrel-startup'
-import { ChatCompletion } from '@baiducloud/qianfan'
 import 'dotenv/config'
-import OpenAI from 'openai'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -31,45 +29,6 @@ const createWindow = async () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
-
-  // const client = new ChatCompletion()
-  // const stream = await client.chat(
-  //   {
-  //     messages: [
-  //       {
-  //         role: "user",
-  //         content: "什么是光合作用",
-  //       },
-  //     ],
-  //     stream: true,
-  //   },
-  //   "ERNIE-Speed-128K"
-  // )
-  // for await (const chunk of stream) {
-  //   console.log(chunk)
-  // }
-  // const openai = new OpenAI({
-  //   // 若没有配置环境变量，请用百炼API Key将下行替换为：apiKey: "sk-xxx",
-  //   apiKey: process.env['ALI_API_KEY'],
-  //   baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-  // })
-
-  // const completion = await openai.chat.completions.create({
-  //   model: 'qwen-omni-turbo',
-  //   messages: [
-  //     { role: 'system', content: 'You are a helpful assistant.' },
-  //     { role: 'user', content: '你是谁？' },
-  //   ],
-  //   stream: true,
-  // })
-
-  // for await (const chunk of completion) {
-  //   if (Array.isArray(chunk.choices) && chunk.choices.length > 0) {
-  //     console.log(chunk.choices[0].delta)
-  //   } else {
-  //     console.log(chunk.usage)
-  //   }
-  // }
 }
 
 // This method will be called when Electron has finished
