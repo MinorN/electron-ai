@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Icon } from '@iconify/vue'
-import { MessageProps } from '@/types'
+import { ref } from "vue";
+import { Icon } from "@iconify/vue";
+import { MessageProps } from "@/types";
+import { formatDate } from "@/utils/date";
 
 defineProps<{
-  messages: MessageProps[]
-}>()
+  messages: MessageProps[];
+}>();
 </script>
 
 <template>
@@ -17,11 +18,11 @@ defineProps<{
             class="text-sm text-gray-500 mb-2"
             :class="{ 'text-right': message.type === 'question' }"
           >
-            {{ message.createdAt }}
+            {{ formatDate(message.createdAt) }}
           </div>
           <div
             v-if="message.type === 'question'"
-            class="bg-green-700 text-white p-2 rounded-md"
+            class="bg-green-700 text-white p-2 rounded-md inline-block float-right"
           >
             {{ message.content }}
           </div>
@@ -29,7 +30,7 @@ defineProps<{
             <template v-if="message.status === 'loading'">
               <Icon icon="eos-icons:three-dots-loading"></Icon>
             </template>
-            <template v-else>
+            <template v-else class="inline-block">
               {{ message.content }}
             </template>
           </div>

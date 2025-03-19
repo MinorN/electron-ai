@@ -18,12 +18,12 @@ export interface ProviderProps {
   models: string[]
 }
 
-export type MessageStatus = 'loading' | 'streaming' | 'finished'
+export type MessageStatus = "loading" | "streaming" | "finished"
 
 export interface MessageProps {
   id: number
   content: string
-  type: 'question' | 'answer'
+  type: "question" | "answer"
   conversationId: number
   status?: MessageStatus
   createdAt: string

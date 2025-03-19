@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ConversationProps } from '@/types'
+import { ConversationProps } from "@/types";
+import { formatDate } from "@/utils/date";
 
-defineProps<{ items: ConversationProps[] }>()
+defineProps<{ items: ConversationProps[] }>();
 </script>
 
 <template>
@@ -16,7 +17,7 @@ defineProps<{ items: ConversationProps[] }>()
           class="flex justify-between items-center text-sm leading-5 text-gray-500"
         >
           <span>{{ item.selectedModel }}</span>
-          <span>{{ item.updatedAt }}</span>
+          <span>{{ formatDate(item.updatedAt) }}</span>
         </div>
         <h2
           class="font-bold leading-6 text-gray-900 truncate"
