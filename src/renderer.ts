@@ -4,6 +4,7 @@ import {
   createMemoryHistory,
   type RouteRecordRaw,
 } from 'vue-router'
+import pinia from '@/stores'
 import App from './App.vue'
 import './index.css'
 import Home from './views/Home.vue'
@@ -30,4 +31,4 @@ const router = createRouter({
   routes: routes,
 })
 
-createApp(App).use(router).mount('#app')
+createApp(App).use(router).use(pinia).mount('#app')
