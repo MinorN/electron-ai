@@ -6,13 +6,14 @@ import MessageList from '@/views/MessageList.vue'
 import { MessageProps, ConversationProps } from '@/types'
 import { db } from '@/db'
 import { formatDate } from '@/utils/date'
-import { useConversationStroe } from '@/stores'
+import { useConversationStroe, useMessageStroe } from '@/stores'
 
 const route = useRoute()
 const conversationStore = useConversationStroe()
+const messageStore = useMessageStroe()
 
 const conversationId = ref(parseInt(route.params.id as string))
-const filterMessages = ref<MessageProps[]>([])
+const filterMessages = computed(() => messageStore.items)
 const conversation = computed(() =>
   conversationStore.getConversationById(conversationId.value)
 )
@@ -21,14 +22,14 @@ watch(
   () => route.params.id,
   async (newId: string) => {
     conversationId.value = parseInt(newId)
-    filterMessages.value = await db.messages
-      .where({ conversationId: conversationId.value })
-      .toArray()
+    await messageStore.fetchMessageByConversation(conversationId.value)
   }
 )
 
 const initMessageId = parseInt(route.query.init as string)
-let lastQuestrion = ''
+const lastQuestrion = computed(() =>
+  messageStore.getLastQuestion(conversationId.value)
+)
 const createInitialMessage = async () => {
   const createdData: Omit<MessageProps, 'id'> = {
     content: '',
@@ -38,8 +39,7 @@ const createInitialMessage = async () => {
     updatedAt: new Date().toISOString(),
     status: 'loading',
   }
-  const newMessageId = await db.messages.add(createdData)
-  filterMessages.value.push({ id: newMessageId, ...createdData })
+  const newMessageId = await messageStore.createMessage(createdData)
   if (conversation.value) {
     const provider = await db.providers
       .where({ id: conversation.value.providerId })
@@ -50,46 +50,19 @@ const createInitialMessage = async () => {
         messageId: newMessageId,
         providerName: provider.name,
         selectedModel: conversation.value.selectedModel,
-        content: lastQuestrion,
+        content: lastQuestrion.value?.content || '',
       })
     }
   }
 }
 
 onMounted(async () => {
-  filterMessages.value = await db.messages
-    .where({ conversationId: conversationId.value })
-    .toArray()
+  await messageStore.fetchMessageByConversation(conversationId.value)
   if (initMessageId) {
-    const lastMessage = await db.messages
-      .where({ conversationId: conversationId.value })
-      .last()
-    lastQuestrion = lastMessage?.content ?? ''
     await createInitialMessage()
   }
   window.electronApi.onUpdateMessage(async (streamData) => {
-    const { messageId, data } = streamData
-    const currentMessage = await db.messages.where({ id: messageId }).first()
-    if (currentMessage) {
-      // 更新数据库
-
-      const updatedData: Partial<MessageProps> = {
-        content: currentMessage.content + data.result,
-        status: data.is_end ? 'finished' : 'streaming',
-        updatedAt: new Date().toISOString(),
-      }
-      await db.messages.update(messageId, updatedData)
-      // 更新响应式数据
-      const index = filterMessages.value.findIndex(
-        (item) => item.id === messageId
-      )
-      if (index !== -1) {
-        filterMessages.value[index] = {
-          ...filterMessages.value[index],
-          ...updatedData,
-        }
-      }
-    }
+    messageStore.updateMessage(streamData)
   })
 })
 </script>
