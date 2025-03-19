@@ -1,8 +1,9 @@
-import { app, BrowserWindow, ipcMain } from "electron"
-import path from "node:path"
-import started from "electron-squirrel-startup"
-import "dotenv/config"
-import { CreateCharProps } from "./types"
+import { app, BrowserWindow, ipcMain } from 'electron'
+import path from 'node:path'
+import started from 'electron-squirrel-startup'
+import 'dotenv/config'
+import { CreateCharProps, UpdateStreamData } from './types'
+import { ChatCompletion } from '@baiducloud/qianfan'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -15,12 +16,39 @@ const createWindow = async () => {
     width: 1024,
     height: 768,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, 'preload.js'),
     },
   })
 
-  ipcMain.on("startChat", (event, data: CreateCharProps) => {
-    console.log("=====", data)
+  ipcMain.on('startChat', async (event, data: CreateCharProps) => {
+    const { providerName, content, messageId, selectedModel } = data
+    if (providerName === 'qianfan') {
+      // 千帆
+      const client = new ChatCompletion()
+      const stream = await client.chat(
+        {
+          messages: [
+            {
+              role: 'user',
+              content,
+            },
+          ],
+          stream: true,
+        },
+        selectedModel
+      )
+      for await (const chunk of stream) {
+        const { is_end, result } = chunk
+        const content: UpdateStreamData = {
+          messageId,
+          data: {
+            is_end,
+            result,
+          },
+        }
+        mainWindow.webContents.send('update-message', content)
+      }
+    }
   })
 
   // and load the index.html of the app.
@@ -39,18 +67,18 @@ const createWindow = async () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow)
+app.on('ready', createWindow)
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
-app.on("activate", () => {
+app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {

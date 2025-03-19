@@ -172,7 +172,12 @@ export const providers: ProviderProps[] = [
     name: 'qianfan',
     title: '百度千帆',
     desc: '文心一言 百度出品的大模型',
-    models: ['ERNIE-4.0-8K', 'ERNIE-3.5-8K', 'ERNIE-Speed-128K'],
+    models: [
+      'ERNIE-Speed-8K',
+      'ERNIE-Speed-128K',
+      'ERNIE-Tiny-8K',
+      'ERNIE-Lite-8K-0308',
+    ],
     avatar:
       'https://aip-static.cdn.bcebos.com/landing/product/ernie-bote321e5.png',
     createdAt: '2024-07-03',
@@ -181,7 +186,7 @@ export const providers: ProviderProps[] = [
   {
     id: 2,
     name: 'dashscope',
-    title: '阿里灵积',
+    title: '阿里百炼',
     desc: '通义千问',
     // https://help.aliyun.com/zh/dashscope/developer-reference/api-details?spm=a2c4g.11186623.0.0.5bf41507xgULX5#b148acc634pfc
     models: ['qwen-turbo', 'qwen-plus', 'qwen-max', 'qwen-vl-plus'],

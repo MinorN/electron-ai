@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue"
-import { useRoute } from "vue-router"
-import MessageInput from "@/components/MessageInput.vue"
-import MessageList from "@/views/MessageList.vue"
-import { MessageProps, ConversationProps } from "@/types"
-import { db } from "@/db"
-import { formatDate } from "@/utils/date"
+import { ref, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import MessageInput from '@/components/MessageInput.vue'
+import MessageList from '@/views/MessageList.vue'
+import { MessageProps, ConversationProps } from '@/types'
+import { db } from '@/db'
+import { formatDate } from '@/utils/date'
 
 const route = useRoute()
 
@@ -27,26 +27,27 @@ watch(
 const initMessageId = parseInt(route.query.init as string)
 let lastQuestrion = ''
 const createInitialMessage = async () => {
-  const createdData: Omit<MessageProps, "id"> = {
-    content: "",
+  const createdData: Omit<MessageProps, 'id'> = {
+    content: '',
     conversationId,
-    type:'answer',
+    type: 'answer',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    status:'loading'
+    status: 'loading',
   }
   const newMessageId = await db.messages.add(createdData)
   filterMessages.value.push({ id: newMessageId, ...createdData })
-  if(conversation.value){
-    console.log('xxxxx',conversation.value)
-    const provider = await db.providers.where({ id: conversation.value.providerId }).first()
-    if(provider){
+  if (conversation.value) {
+    const provider = await db.providers
+      .where({ id: conversation.value.providerId })
+      .first()
+    if (provider) {
       // 发送消息
       await window.electronApi.startChat({
         messageId: newMessageId,
         providerName: provider.name,
         selectedModel: conversation.value.selectedModel,
-        content: lastQuestrion
+        content: lastQuestrion,
       })
     }
   }
@@ -57,11 +58,14 @@ onMounted(async () => {
     .where({ id: conversationId })
     .first()
   filterMessages.value = await db.messages.where({ conversationId }).toArray()
-  if(initMessageId){
+  if (initMessageId) {
     const lastMessage = await db.messages.where({ conversationId }).last()
     lastQuestrion = lastMessage?.content ?? ''
     await createInitialMessage()
   }
+  window.electronApi.onUpdateMessage((streamData) => {
+    console.log('streamData', streamData)
+  })
 })
 </script>
 

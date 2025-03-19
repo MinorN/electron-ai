@@ -18,12 +18,12 @@ export interface ProviderProps {
   models: string[]
 }
 
-export type MessageStatus = "loading" | "streaming" | "finished"
+export type MessageStatus = 'loading' | 'streaming' | 'finished'
 
 export interface MessageProps {
   id: number
   content: string
-  type: "question" | "answer"
+  type: 'question' | 'answer'
   conversationId: number
   status?: MessageStatus
   createdAt: string
@@ -36,3 +36,13 @@ export interface CreateCharProps {
   selectedModel: string
   messageId: number
 }
+
+export interface UpdateStreamData {
+  messageId: number
+  data: {
+    is_end: boolean
+    result: string
+  }
+}
+
+export type OnUpdateCallback = (data: UpdateStreamData) => void
