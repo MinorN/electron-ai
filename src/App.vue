@@ -1,18 +1,25 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
 import ConversationList from "@/components/ConversationList.vue";
-import { conversations } from "@/testData";
-import Button from "./components/Button.vue";
+import { providers } from "@/testData";
+import Button from "@/components/Button.vue";
+import { db, initProviders } from "@/db";
+import { ConversationProps } from "@/types";
 
-const items = conversations;
+const conversations = ref<ConversationProps[]>([]);
+
+onMounted(async () => {
+  await initProviders();
+  conversations.value = await db.conversations.toArray();
+});
 </script>
 
 <template>
   <div class="flex items-center justify-between h-screen">
     <div class="w-[300px] bg-gray-200 h-full border-r border-gray-300">
       <div class="h-[90%] overflow-y-auto">
-        <ConversationList :items="items" />
+        <ConversationList :items="conversations" />
       </div>
       <div class="h-[10%] grid grid-cols-2 gap-2 p-2">
         <RouterLink to="/">
