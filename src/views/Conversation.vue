@@ -30,6 +30,35 @@ const initMessageId = parseInt(route.query.init as string)
 const lastQuestrion = computed(() =>
   messageStore.getLastQuestion(conversationId.value)
 )
+
+// 大模型接口的上下文
+const sendedMessages = computed(() =>
+  filterMessages.value
+    .filter((message) => message.status !== 'loading')
+    .map((message) => {
+      return {
+        role: message.type === 'question' ? 'user' : 'assistant',
+        content: message.content,
+      }
+    })
+)
+const inputValue = ref('')
+
+const sendNewMessage = async (question: string) => {
+  if (question && question.trim() !== '') {
+    const date = new Date().toISOString()
+    const newMessageId = await messageStore.createMessage({
+      content: question,
+      conversationId: conversationId.value,
+      type: 'question',
+      createdAt: date,
+      updatedAt: date,
+    })
+    inputValue.value = ''
+    createInitialMessage()
+  }
+}
+
 const createInitialMessage = async () => {
   const createdData: Omit<MessageProps, 'id'> = {
     content: '',
@@ -50,7 +79,7 @@ const createInitialMessage = async () => {
         messageId: newMessageId,
         providerName: provider.name,
         selectedModel: conversation.value.selectedModel,
-        content: lastQuestrion.value?.content || '',
+        messages: sendedMessages.value as any,
       })
     }
   }
@@ -83,6 +112,6 @@ onMounted(async () => {
     <MessageList :messages="filterMessages" />
   </div>
   <div class="w-[80%] mx-auto h-[15%] flex items-center">
-    <MessageInput />
+    <MessageInput v-model="inputValue" @create="sendNewMessage" />
   </div>
 </template>

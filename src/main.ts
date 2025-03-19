@@ -4,6 +4,7 @@ import started from 'electron-squirrel-startup'
 import 'dotenv/config'
 import { CreateCharProps, UpdateStreamData } from './types'
 import { ChatCompletion } from '@baiducloud/qianfan'
+import OpenAI from 'openai'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -21,18 +22,13 @@ const createWindow = async () => {
   })
 
   ipcMain.on('startChat', async (event, data: CreateCharProps) => {
-    const { providerName, content, messageId, selectedModel } = data
+    const { providerName, messages, messageId, selectedModel } = data
     if (providerName === 'qianfan') {
       // 千帆
       const client = new ChatCompletion()
       const stream = await client.chat(
         {
-          messages: [
-            {
-              role: 'user',
-              content,
-            },
-          ],
+          messages,
           stream: true,
         },
         selectedModel
@@ -44,6 +40,27 @@ const createWindow = async () => {
           data: {
             is_end,
             result,
+          },
+        }
+        mainWindow.webContents.send('update-message', content)
+      }
+    } else if (providerName === 'dashscope') {
+      const client = new OpenAI({
+        apiKey: process.env['ALI_API_KEY'],
+        baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+      })
+      const stream = await client.chat.completions.create({
+        messages: messages as any,
+        model: selectedModel,
+        stream: true,
+      })
+      for await (const chunk of stream) {
+        const choice = chunk.choices[0]
+        const content = {
+          messageId,
+          data: {
+            is_end: choice.finish_reason === 'stop',
+            result: choice.delta.content || '',
           },
         }
         mainWindow.webContents.send('update-message', content)
