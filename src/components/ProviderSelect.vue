@@ -48,7 +48,7 @@ const currentModel = defineModel<string>()
                 <SelectItem
                   v-for="(model, index) in provider.models"
                   :key="index"
-                  :value="`${provider.name}/${model}`"
+                  :value="`${provider.id}/${model}`"
                   class="outline-none rounded flex items-center h-7 px-6 relative text-green-700 cursor-pointer data-[highlighted]:bg-green-700 data-[highlighted]:text-white"
                 >
                   <SelectItemIndicator class="absolute left-2 w-6">

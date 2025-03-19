@@ -25,6 +25,7 @@ watch(
 )
 
 const initMessageId = parseInt(route.query.init as string)
+let lastQuestrion = ''
 const createInitialMessage = async () => {
   const createdData: Omit<MessageProps, "id"> = {
     content: "",
@@ -36,6 +37,19 @@ const createInitialMessage = async () => {
   }
   const newMessageId = await db.messages.add(createdData)
   filterMessages.value.push({ id: newMessageId, ...createdData })
+  if(conversation.value){
+    console.log('xxxxx',conversation.value)
+    const provider = await db.providers.where({ id: conversation.value.providerId }).first()
+    if(provider){
+      // 发送消息
+      await window.electronApi.startChat({
+        messageId: newMessageId,
+        providerName: provider.name,
+        selectedModel: conversation.value.selectedModel,
+        content: lastQuestrion
+      })
+    }
+  }
 }
 
 onMounted(async () => {
@@ -44,7 +58,9 @@ onMounted(async () => {
     .first()
   filterMessages.value = await db.messages.where({ conversationId }).toArray()
   if(initMessageId){
-    createInitialMessage()
+    const lastMessage = await db.messages.where({ conversationId }).last()
+    lastQuestrion = lastMessage?.content ?? ''
+    await createInitialMessage()
   }
 })
 </script>

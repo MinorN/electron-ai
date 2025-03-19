@@ -29,3 +29,10 @@ export interface MessageProps {
   createdAt: string
   updatedAt: string
 }
+
+export interface CreateCharProps {
+  content: string
+  providerName: string
+  selectedModel: string
+  messageId: number
+}
