@@ -63,8 +63,29 @@ onMounted(async () => {
     lastQuestrion = lastMessage?.content ?? ''
     await createInitialMessage()
   }
-  window.electronApi.onUpdateMessage((streamData) => {
-    console.log('streamData', streamData)
+  window.electronApi.onUpdateMessage(async (streamData) => {
+    const { messageId, data } = streamData
+    const currentMessage = await db.messages.where({ id: messageId }).first()
+    if (currentMessage) {
+      // 更新数据库
+
+      const updatedData: Partial<MessageProps> = {
+        content: currentMessage.content + data.result,
+        status: data.is_end ? 'finished' : 'streaming',
+        updatedAt: new Date().toISOString(),
+      }
+      await db.messages.update(messageId, updatedData)
+      // 更新响应式数据
+      const index = filterMessages.value.findIndex(
+        (item) => item.id === messageId
+      )
+      if (index !== -1) {
+        filterMessages.value[index] = {
+          ...filterMessages.value[index],
+          ...updatedData,
+        }
+      }
+    }
   })
 })
 </script>
