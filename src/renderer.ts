@@ -11,6 +11,7 @@ import Home from "./views/Home.vue"
 import Conversation from "./views/Conversation.vue"
 import Settings from "./views/Settings.vue"
 import { useConversationStroe } from "@/stores"
+import "highlight.js/styles/github-dark.min.css"
 
 const routes: RouteRecordRaw[] = [
   {

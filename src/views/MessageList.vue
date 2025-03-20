@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { Icon } from "@iconify/vue";
-import { MessageProps } from "@/types";
-import { formatDate } from "@/utils/date";
-import VueMarkdown from 'vue-markdown-render'
+import { ref } from "vue"
+import { Icon } from "@iconify/vue"
+import { MessageProps } from "@/types"
+import { formatDate } from "@/utils/date"
+import VueMarkdown from "vue-markdown-render"
+import markdownHighlight from "markdown-it-highlightjs"
 
 defineProps<{
-  messages: MessageProps[];
-}>();
+  messages: MessageProps[]
+}>()
+
+const plugins = [markdownHighlight]
 </script>
 
 <template>
@@ -31,8 +34,11 @@ defineProps<{
             <template v-if="message.status === 'loading'">
               <Icon icon="eos-icons:three-dots-loading"></Icon>
             </template>
-            <div v-else class="inline-block prose prose-stone prose-headings:my-2 prose-li:my-0 prose-ul:my-1 prose-p:my-1 prose-blockquote:my-1">
-              <vue-markdown :source="message.content" />
+            <div
+              v-else
+              class="inline-block prose prose-stone prose-headings:my-2 prose-li:my-0 prose-ul:my-1 prose-p:my-1 prose-blockquote:my-1 prose-pre:p-0"
+            >
+              <vue-markdown :source="message.content" :plugins="plugins" />
             </div>
           </div>
         </div>
