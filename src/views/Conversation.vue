@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import MessageInput from '@/components/MessageInput.vue'
 import MessageList from '@/views/MessageList.vue'
-import { MessageProps, ConversationProps } from '@/types'
+import { MessageProps, MessageListInstance } from '@/types'
 import { db } from '@/db'
 import { formatDate } from '@/utils/date'
 import { useConversationStroe, useMessageStroe } from '@/stores'
@@ -18,11 +18,23 @@ const conversation = computed(() =>
   conversationStore.getConversationById(conversationId.value)
 )
 
+// 自动滚动至底部
+const scrollToBottom = async () => {
+  await nextTick()
+  if (messageListRef.value) {
+    messageListRef.value.ref.scrollIntoView({
+      block: 'end',
+      behavior: 'smooth',
+    })
+  }
+}
+
 watch(
   () => route.params.id,
   async (newId: string) => {
     conversationId.value = parseInt(newId)
     await messageStore.fetchMessageByConversation(conversationId.value)
+    await scrollToBottom()
   }
 )
 
@@ -85,8 +97,11 @@ const createInitialMessage = async () => {
   }
 }
 
+const messageListRef = ref<MessageListInstance>()
+
 onMounted(async () => {
   await messageStore.fetchMessageByConversation(conversationId.value)
+  await scrollToBottom()
   if (initMessageId) {
     await createInitialMessage()
   }
@@ -109,9 +124,13 @@ onMounted(async () => {
     </span>
   </div>
   <div class="w-[80%] mx-auto h-[75%] overflow-y-auto pt-2">
-    <MessageList :messages="filterMessages" />
+    <MessageList :messages="filterMessages" ref="messageListRef" />
   </div>
   <div class="w-[80%] mx-auto h-[15%] flex items-center">
-    <MessageInput v-model="inputValue" @create="sendNewMessage" :disabled="messageStore.isMessageLoading" />
+    <MessageInput
+      v-model="inputValue"
+      @create="sendNewMessage"
+      :disabled="messageStore.isMessageLoading"
+    />
   </div>
 </template>

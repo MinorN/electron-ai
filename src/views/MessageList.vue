@@ -1,20 +1,26 @@
 <script setup lang="ts">
-import { ref } from "vue"
-import { Icon } from "@iconify/vue"
-import { MessageProps } from "@/types"
-import { formatDate } from "@/utils/date"
-import VueMarkdown from "vue-markdown-render"
-import markdownHighlight from "markdown-it-highlightjs"
+import { ref } from 'vue'
+import { Icon } from '@iconify/vue'
+import { MessageProps } from '@/types'
+import { formatDate } from '@/utils/date'
+import VueMarkdown from 'vue-markdown-render'
+import markdownHighlight from 'markdown-it-highlightjs'
 
 defineProps<{
   messages: MessageProps[]
 }>()
 
+const _ref = ref<HTMLDataElement>()
+
 const plugins = [markdownHighlight]
+
+defineExpose({
+  ref: _ref,
+})
 </script>
 
 <template>
-  <div>
+  <div ref="_ref">
     <div v-for="message in messages" :key="message.id" class="mb-3">
       <div class="flex" :class="{ 'justify-end': message.type === 'question' }">
         <div>
