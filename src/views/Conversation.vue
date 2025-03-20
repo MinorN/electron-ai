@@ -81,6 +81,7 @@ const createInitialMessage = async () => {
     status: 'loading',
   }
   const newMessageId = await messageStore.createMessage(createdData)
+  await scrollToBottom()
   if (conversation.value) {
     const provider = await db.providers
       .where({ id: conversation.value.providerId })
@@ -101,12 +102,26 @@ const messageListRef = ref<MessageListInstance>()
 
 onMounted(async () => {
   await messageStore.fetchMessageByConversation(conversationId.value)
-  await scrollToBottom()
   if (initMessageId) {
     await createInitialMessage()
   }
+  await scrollToBottom()
+
+  let currentMessageListHeight = 0
+  const needToBottom = async () => {
+    if (messageListRef.value) {
+      const newHeight = messageListRef.value.ref.clientHeight
+      if (newHeight > currentMessageListHeight) {
+        currentMessageListHeight = newHeight
+        await scrollToBottom()
+      }
+    }
+  }
+
   window.electronApi.onUpdateMessage(async (streamData) => {
     messageStore.updateMessage(streamData)
+    await nextTick()
+    await needToBottom()
   })
 })
 </script>
