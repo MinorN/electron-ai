@@ -1,15 +1,17 @@
-import { defineStore } from 'pinia'
-import { ConversationProps } from '@/types'
-import { db } from '@/db'
+import { defineStore } from "pinia"
+import { ConversationProps } from "@/types"
+import { db } from "@/db"
 
 export interface ConversationStroe {
   items: ConversationProps[]
+  selectedId: number
 }
 
-export const useConversationStroe = defineStore('conversation', {
+export const useConversationStroe = defineStore("conversation", {
   state: (): ConversationStroe => {
     return {
       items: [],
+      selectedId: -1,
     }
   },
   getters: {
@@ -23,7 +25,7 @@ export const useConversationStroe = defineStore('conversation', {
       const items = await db.conversations.toArray()
       this.items = items
     },
-    async createConversation(createdData: Omit<ConversationProps, 'id'>) {
+    async createConversation(createdData: Omit<ConversationProps, "id">) {
       const newCId = await db.conversations.add(createdData)
       this.items.push({
         id: newCId,

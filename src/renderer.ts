@@ -1,27 +1,28 @@
-import { createApp } from 'vue'
+import { createApp } from "vue"
 import {
   createRouter,
   createMemoryHistory,
   type RouteRecordRaw,
-} from 'vue-router'
-import pinia from '@/stores'
-import App from './App.vue'
-import './index.css'
-import Home from './views/Home.vue'
-import Conversation from './views/Conversation.vue'
-import Settings from './views/Settings.vue'
+} from "vue-router"
+import pinia from "@/stores"
+import App from "./App.vue"
+import "./index.css"
+import Home from "./views/Home.vue"
+import Conversation from "./views/Conversation.vue"
+import Settings from "./views/Settings.vue"
+import { useConversationStroe } from "@/stores"
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: "/",
     component: Home,
   },
   {
-    path: '/conversation/:id',
+    path: "/conversation/:id",
     component: Conversation,
   },
   {
-    path: '/settings',
+    path: "/settings",
     component: Settings,
   },
 ]
@@ -31,4 +32,11 @@ const router = createRouter({
   routes: routes,
 })
 
-createApp(App).use(router).use(pinia).mount('#app')
+router.beforeEach((to, _) => {
+  const stroe = useConversationStroe()
+  if (!to.path.startsWith("/conversation")) {
+    stroe.selectedId = -1
+  }
+})
+
+createApp(App).use(router).use(pinia).mount("#app")

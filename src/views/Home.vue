@@ -54,7 +54,7 @@ onMounted(async () => {
         <ProviderSelect :items="providers" v-model="currentProvider" />
       </div>
       <div class="flex items-center h-[15%]">
-        <MessageInput @create="createConversation" />
+        <MessageInput @create="createConversation" :disabled="currentProvider ===''" />
       </div>
     </div>
   </div>

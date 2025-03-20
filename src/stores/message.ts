@@ -1,12 +1,12 @@
-import { defineStore } from 'pinia'
-import { MessageProps, UpdateStreamData } from '@/types'
-import { db } from '@/db'
+import { defineStore } from "pinia"
+import { MessageProps, UpdateStreamData } from "@/types"
+import { db } from "@/db"
 
 export interface MessageStroe {
   items: MessageProps[]
 }
 
-export const useMessageStroe = defineStore('message', {
+export const useMessageStroe = defineStore("message", {
   state: (): MessageStroe => {
     return {
       items: [],
@@ -16,7 +16,12 @@ export const useMessageStroe = defineStore('message', {
     getLastQuestion: (state) => (conversationId: number) => {
       return state.items.findLast(
         (item) =>
-          item.conversationId === conversationId && item.type === 'question'
+          item.conversationId === conversationId && item.type === "question"
+      )
+    },
+    isMessageLoading: (state) => {
+      return state.items.some(
+        (item) => item.status === "loading" || item.status === "streaming"
       )
     },
   },
@@ -25,7 +30,7 @@ export const useMessageStroe = defineStore('message', {
       const items = await db.messages.where({ conversationId }).toArray()
       this.items = items
     },
-    async createMessage(createdData: Omit<MessageProps, 'id'>) {
+    async createMessage(createdData: Omit<MessageProps, "id">) {
       const newMessageId = await db.messages.add(createdData)
       this.items.push({ id: newMessageId, ...createdData })
       return newMessageId
@@ -36,7 +41,7 @@ export const useMessageStroe = defineStore('message', {
       if (currentMessage) {
         const updatedData: Partial<MessageProps> = {
           content: currentMessage.content + data.result,
-          status: data.is_end ? 'finished' : 'streaming',
+          status: data.is_end ? "finished" : "streaming",
           updatedAt: new Date().toISOString(),
         }
         await db.messages.update(messageId, updatedData)

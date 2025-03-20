@@ -112,6 +112,6 @@ onMounted(async () => {
     <MessageList :messages="filterMessages" />
   </div>
   <div class="w-[80%] mx-auto h-[15%] flex items-center">
-    <MessageInput v-model="inputValue" @create="sendNewMessage" />
+    <MessageInput v-model="inputValue" @create="sendNewMessage" :disabled="messageStore.isMessageLoading" />
   </div>
 </template>
