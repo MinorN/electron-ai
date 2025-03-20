@@ -31,9 +31,9 @@ defineProps<{
             <template v-if="message.status === 'loading'">
               <Icon icon="eos-icons:three-dots-loading"></Icon>
             </template>
-            <template v-else class="inline-block">
+            <div v-else class="inline-block prose prose-stone prose-headings:my-2 prose-li:my-0 prose-ul:my-1 prose-p:my-1 prose-blockquote:my-1">
               <vue-markdown :source="message.content" />
-            </template>
+            </div>
           </div>
         </div>
       </div>
