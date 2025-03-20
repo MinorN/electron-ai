@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { Icon } from "@iconify/vue";
 import { MessageProps } from "@/types";
 import { formatDate } from "@/utils/date";
+import VueMarkdown from 'vue-markdown-render'
 
 defineProps<{
   messages: MessageProps[];
@@ -31,7 +32,7 @@ defineProps<{
               <Icon icon="eos-icons:three-dots-loading"></Icon>
             </template>
             <template v-else class="inline-block">
-              {{ message.content }}
+              <vue-markdown :source="message.content" />
             </template>
           </div>
         </div>
