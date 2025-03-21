@@ -32,7 +32,11 @@ export interface MessageProps {
 }
 
 export interface CreateCharProps {
-  messages: { role: "user" | "assistant"; content: string }[]
+  messages: {
+    role: "user" | "assistant"
+    content: string
+    imagePath?: string
+  }[]
   providerName: string
   selectedModel: string
   messageId: number

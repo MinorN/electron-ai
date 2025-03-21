@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
-import MessageInput from '@/components/MessageInput.vue'
-import MessageList from '@/views/MessageList.vue'
-import { MessageProps, MessageListInstance } from '@/types'
-import { db } from '@/db'
-import { formatDate } from '@/utils/date'
-import { useConversationStroe, useMessageStroe } from '@/stores'
+import { ref, watch, onMounted, computed, nextTick } from "vue"
+import { useRoute } from "vue-router"
+import MessageInput from "@/components/MessageInput.vue"
+import MessageList from "@/views/MessageList.vue"
+import { MessageProps, MessageListInstance } from "@/types"
+import { db } from "@/db"
+import { formatDate } from "@/utils/date"
+import { useConversationStroe, useMessageStroe } from "@/stores"
 
 const route = useRoute()
 const conversationStore = useConversationStroe()
@@ -23,8 +23,8 @@ const scrollToBottom = async () => {
   await nextTick()
   if (messageListRef.value) {
     messageListRef.value.ref.scrollIntoView({
-      block: 'end',
-      behavior: 'smooth',
+      block: "end",
+      behavior: "smooth",
     })
   }
 }
@@ -46,39 +46,40 @@ const lastQuestrion = computed(() =>
 // 大模型接口的上下文
 const sendedMessages = computed(() =>
   filterMessages.value
-    .filter((message) => message.status !== 'loading')
+    .filter((message) => message.status !== "loading")
     .map((message) => {
       return {
-        role: message.type === 'question' ? 'user' : 'assistant',
+        role: message.type === "question" ? "user" : "assistant",
         content: message.content,
+        ...(message.imagePath && { imagePath: message.imagePath }),
       }
     })
 )
-const inputValue = ref('')
+const inputValue = ref("")
 
 const sendNewMessage = async (question: string) => {
-  if (question && question.trim() !== '') {
+  if (question && question.trim() !== "") {
     const date = new Date().toISOString()
     const newMessageId = await messageStore.createMessage({
       content: question,
       conversationId: conversationId.value,
-      type: 'question',
+      type: "question",
       createdAt: date,
       updatedAt: date,
     })
-    inputValue.value = ''
+    inputValue.value = ""
     createInitialMessage()
   }
 }
 
 const createInitialMessage = async () => {
-  const createdData: Omit<MessageProps, 'id'> = {
-    content: '',
+  const createdData: Omit<MessageProps, "id"> = {
+    content: "",
     conversationId: conversationId.value,
-    type: 'answer',
+    type: "answer",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    status: 'loading',
+    status: "loading",
   }
   const newMessageId = await messageStore.createMessage(createdData)
   await scrollToBottom()

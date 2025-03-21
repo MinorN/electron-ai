@@ -6,6 +6,7 @@ import { CreateCharProps, UpdateStreamData } from "./types"
 import { ChatCompletion } from "@baiducloud/qianfan"
 import OpenAI from "openai"
 import fs from "fs/promises"
+import { convertMessage } from "./utils/helper"
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -24,12 +25,13 @@ const createWindow = async () => {
 
   ipcMain.on("startChat", async (event, data: CreateCharProps) => {
     const { providerName, messages, messageId, selectedModel } = data
+    const convertMessages = await convertMessage(messages)
     if (providerName === "qianfan") {
       // 千帆
       const client = new ChatCompletion()
       const stream = await client.chat(
         {
-          messages,
+          messages: convertMessages,
           stream: true,
         },
         selectedModel
@@ -51,7 +53,7 @@ const createWindow = async () => {
         baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
       })
       const stream = await client.chat.completions.create({
-        messages: messages as any,
+        messages: convertMessages as any,
         model: selectedModel,
         stream: true,
       })
@@ -68,6 +70,7 @@ const createWindow = async () => {
       }
     }
   })
+
   ipcMain.handle(
     "copy-image-to-user-dir",
     async (_event, sourcePath: string) => {
