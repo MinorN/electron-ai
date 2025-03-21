@@ -57,15 +57,24 @@ const sendedMessages = computed(() =>
 )
 const inputValue = ref("")
 
-const sendNewMessage = async (question: string) => {
+const sendNewMessage = async (question: string, imagePath?: string) => {
   if (question && question.trim() !== "") {
     const date = new Date().toISOString()
+    let copyImagePath: string | undefined
+    if (imagePath) {
+      try {
+        copyImagePath = await window.electronApi.copyImageToUserDir(imagePath)
+      } catch (e) {
+        console.error("Failed to copy image to user dir")
+      }
+    }
     const newMessageId = await messageStore.createMessage({
       content: question,
       conversationId: conversationId.value,
       type: "question",
       createdAt: date,
       updatedAt: date,
+      ...(copyImagePath && { imagePath: copyImagePath }),
     })
     inputValue.value = ""
     createInitialMessage()
