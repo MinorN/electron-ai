@@ -1,12 +1,13 @@
-import { app, BrowserWindow, ipcMain } from "electron"
+import { app, BrowserWindow, ipcMain, protocol, net } from "electron"
 import path from "node:path"
 import started from "electron-squirrel-startup"
 import "dotenv/config"
-import { CreateCharProps, UpdateStreamData } from "./types"
 import { ChatCompletion } from "@baiducloud/qianfan"
 import OpenAI from "openai"
 import fs from "fs/promises"
 import { convertMessage } from "./utils/helper"
+import { CreateCharProps, UpdateStreamData } from "./types"
+import url from "url"
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -21,6 +22,15 @@ const createWindow = async () => {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
+  })
+
+  protocol.handle("safe-file", async (request) => {
+    console.log(request.url)
+    const filePath = decodeURIComponent(
+      request.url.slice("safe-file://".length)
+    )
+    const newFilePath = url.pathToFileURL(filePath).toString()
+    return net.fetch(newFilePath)
   })
 
   ipcMain.on("startChat", async (event, data: CreateCharProps) => {

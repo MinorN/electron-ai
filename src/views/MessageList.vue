@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Icon } from '@iconify/vue'
-import { MessageProps } from '@/types'
-import { formatDate } from '@/utils/date'
-import VueMarkdown from 'vue-markdown-render'
-import markdownHighlight from 'markdown-it-highlightjs'
+import { ref } from "vue"
+import { Icon } from "@iconify/vue"
+import { MessageProps } from "@/types"
+import { formatDate } from "@/utils/date"
+import VueMarkdown from "vue-markdown-render"
+import markdownHighlight from "markdown-it-highlightjs"
 
 defineProps<{
   messages: MessageProps[]
@@ -34,6 +34,11 @@ defineExpose({
             v-if="message.type === 'question'"
             class="bg-green-700 text-white p-2 rounded-md inline-block float-right"
           >
+            <img
+              v-if="message.imagePath"
+              :src="`safe-file://${message.imagePath}`"
+              class="h-24 w-24 object-cover rounded block"
+            />
             {{ message.content }}
           </div>
           <div v-else class="bg-gray-200 text-gray-700 p-2 rounded-md">
