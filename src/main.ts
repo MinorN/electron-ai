@@ -1,13 +1,13 @@
-import { app, BrowserWindow, ipcMain, protocol, net } from "electron"
-import path from "node:path"
-import started from "electron-squirrel-startup"
-import "dotenv/config"
-import { ChatCompletion } from "@baiducloud/qianfan"
-import OpenAI from "openai"
-import fs from "fs/promises"
-import { convertMessage } from "./utils/helper"
-import { CreateCharProps, UpdateStreamData } from "./types"
-import url from "url"
+import { app, BrowserWindow, ipcMain, protocol, net } from 'electron'
+import path from 'node:path'
+import started from 'electron-squirrel-startup'
+import 'dotenv/config'
+import { ChatCompletion } from '@baiducloud/qianfan'
+import OpenAI from 'openai'
+import fs from 'fs/promises'
+import { convertMessage } from './utils/helper'
+import { CreateCharProps, UpdateStreamData } from './types'
+import { pathToFileURL } from 'url'
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -20,23 +20,14 @@ const createWindow = async () => {
     width: 1024,
     height: 768,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, 'preload.js'),
     },
   })
 
-  protocol.handle("safe-file", async (request) => {
-    console.log(request.url)
-    const filePath = decodeURIComponent(
-      request.url.slice("safe-file://".length)
-    )
-    const newFilePath = url.pathToFileURL(filePath).toString()
-    return net.fetch(newFilePath)
-  })
-
-  ipcMain.on("startChat", async (event, data: CreateCharProps) => {
+  ipcMain.on('startChat', async (event, data: CreateCharProps) => {
     const { providerName, messages, messageId, selectedModel } = data
     const convertMessages = await convertMessage(messages)
-    if (providerName === "qianfan") {
+    if (providerName === 'qianfan') {
       // 千帆
       const client = new ChatCompletion()
       const stream = await client.chat(
@@ -55,12 +46,12 @@ const createWindow = async () => {
             result,
           },
         }
-        mainWindow.webContents.send("update-message", content)
+        mainWindow.webContents.send('update-message', content)
       }
-    } else if (providerName === "dashscope") {
+    } else if (providerName === 'dashscope') {
       const client = new OpenAI({
-        apiKey: process.env["ALI_API_KEY"],
-        baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        apiKey: process.env['ALI_API_KEY'],
+        baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
       })
       const stream = await client.chat.completions.create({
         messages: convertMessages as any,
@@ -72,20 +63,20 @@ const createWindow = async () => {
         const content = {
           messageId,
           data: {
-            is_end: choice.finish_reason === "stop",
-            result: choice.delta.content || "",
+            is_end: choice.finish_reason === 'stop',
+            result: choice.delta.content || '',
           },
         }
-        mainWindow.webContents.send("update-message", content)
+        mainWindow.webContents.send('update-message', content)
       }
     }
   })
 
   ipcMain.handle(
-    "copy-image-to-user-dir",
+    'copy-image-to-user-dir',
     async (_event, sourcePath: string) => {
-      const userDataPath = app.getPath("userData")
-      const imageDir = path.join(userDataPath, "images")
+      const userDataPath = app.getPath('userData')
+      const imageDir = path.join(userDataPath, 'images')
       await fs.mkdir(imageDir, { recursive: true })
       const filename = path.basename(sourcePath)
       const destPath = path.join(imageDir, filename)
@@ -110,18 +101,40 @@ const createWindow = async () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow)
+app.on('ready', createWindow)
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'safe-file',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+    },
+  },
+])
+
+app.whenReady().then(() => {
+  protocol.handle('safe-file', async (request) => {
+    console.log('request.url', request.url)
+    const filePath = decodeURIComponent(
+      request.url.slice('safe-file://'.length)
+    )
+    const newFilePath = pathToFileURL(filePath).toString()
+    return net.fetch(newFilePath)
+  })
+})
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
-app.on("activate", () => {
+app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {

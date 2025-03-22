@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from "vue"
-import { Icon } from "@iconify/vue"
-import { MessageProps } from "@/types"
-import { formatDate } from "@/utils/date"
-import VueMarkdown from "vue-markdown-render"
-import markdownHighlight from "markdown-it-highlightjs"
+import { ref } from 'vue'
+import { Icon } from '@iconify/vue'
+import { MessageProps } from '@/types'
+import { formatDate } from '@/utils/date'
+import VueMarkdown from 'vue-markdown-render'
+import markdownHighlight from 'markdown-it-highlightjs'
 
 defineProps<{
   messages: MessageProps[]
