@@ -76,6 +76,7 @@ const createWindow = async () => {
     'copy-image-to-user-dir',
     async (_event, sourcePath: string) => {
       const userDataPath = app.getPath('userData')
+      console.log('userDataPath', userDataPath)
       const imageDir = path.join(userDataPath, 'images')
       await fs.mkdir(imageDir, { recursive: true })
       const filename = path.basename(sourcePath)
@@ -116,11 +117,14 @@ protocol.registerSchemesAsPrivileged([
 
 app.whenReady().then(() => {
   protocol.handle('safe-file', async (request) => {
-    console.log('request.url', request.url)
-    const filePath = decodeURIComponent(
-      request.url.slice('safe-file://'.length)
+    const userDataPath = app.getPath('userData')
+    const imageDir = path.join(userDataPath, 'images')
+    const filePath = path.join(
+      decodeURIComponent(request.url.slice('safe-file:/'.length))
     )
-    const newFilePath = pathToFileURL(filePath).toString()
+    const filename = path.basename(filePath)
+    const fileAddr = path.join(imageDir, filename)
+    const newFilePath = pathToFileURL(fileAddr).toString()
     return net.fetch(newFilePath)
   })
 })
