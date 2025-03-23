@@ -18,12 +18,12 @@ export interface ProviderProps {
   models: string[]
 }
 
-export type MessageStatus = "loading" | "streaming" | "finished"
+export type MessageStatus = 'loading' | 'streaming' | 'finished'
 
 export interface MessageProps {
   id: number
   content: string
-  type: "question" | "answer"
+  type: 'question' | 'answer'
   conversationId: number
   status?: MessageStatus
   createdAt: string
@@ -31,12 +31,14 @@ export interface MessageProps {
   imagePath?: string
 }
 
+export interface ChatMessageProps {
+  role: 'user' | 'assistant'
+  content: string
+  imagePath?: string
+}
+
 export interface CreateCharProps {
-  messages: {
-    role: "user" | "assistant"
-    content: string
-    imagePath?: string
-  }[]
+  messages: ChatMessageProps[]
   providerName: string
   selectedModel: string
   messageId: number
