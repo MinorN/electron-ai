@@ -29,6 +29,7 @@
     "@electron/fuses": "^1.8.0",
     "@iconify/vue": "^4.3.0",
     "@tailwindcss/typography": "^0.5.16",
+    "@types/electron-squirrel-startup": "^1.0.2",
     "@types/mime-types": "^2.1.4",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
