@@ -18,12 +18,12 @@ export interface ProviderProps {
   models: string[]
 }
 
-export type MessageStatus = 'loading' | 'streaming' | 'finished'
+export type MessageStatus = "loading" | "streaming" | "finished"
 
 export interface MessageProps {
   id: number
   content: string
-  type: 'question' | 'answer'
+  type: "question" | "answer"
   conversationId: number
   status?: MessageStatus
   createdAt: string
@@ -32,7 +32,7 @@ export interface MessageProps {
 }
 
 export interface ChatMessageProps {
-  role: 'user' | 'assistant'
+  role: "user" | "assistant"
   content: string
   imagePath?: string
 }
@@ -44,12 +44,14 @@ export interface CreateCharProps {
   messageId: number
 }
 
+export interface ChunkProps {
+  is_end: boolean
+  result: string
+}
+
 export interface UpdateStreamData {
   messageId: number
-  data: {
-    is_end: boolean
-    result: string
-  }
+  data: ChunkProps
 }
 
 export type OnUpdateCallback = (data: UpdateStreamData) => void

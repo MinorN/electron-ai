@@ -1,25 +1,34 @@
-import { CreateCharProps, UpdateStreamData, ChatMessageProps } from '@/types'
-import { ChatCompletion } from '@baiducloud/qianfan'
-import { BaseProider } from './BaseProvider'
+import { ChatMessageProps, ChunkProps } from "@/types"
+import { ChatCompletion } from "@baiducloud/qianfan"
+import { BaseProider } from "./BaseProvider"
 
 export class QianfanProvider extends BaseProider {
-  private client: any
-  constructor(accessKey: string, secretKey: string) {
+  private client: ChatCompletion
+  constructor() {
     super()
-    this.client = new ChatCompletion({
-      QIANFAN_ACCESS_KEY: accessKey,
-      QIANFAN_SECRET_KEY: secretKey,
-      ENABLE_OAUTH: false,
-    })
+    this.client = new ChatCompletion()
   }
   async chat(messages: ChatMessageProps[], model: string) {
-    const stream = this.client.chat(
+    const stream = await this.client.chat(
       {
         messages,
         stream: true,
       },
       model
     )
-    return stream
+    const self = this
+    return {
+      async *[Symbol.asyncIterator]() {
+        for await (const chunk of stream) {
+          yield self.transformResp(chunk)
+        }
+      },
+    }
+  }
+  protected transformResp(chunk: any): ChunkProps {
+    return {
+      is_end: chunk.is_end,
+      result: chunk.result,
+    }
   }
 }
